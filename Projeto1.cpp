@@ -157,13 +157,13 @@ int contafig ( vector<vector<int>> matrix){
         if (isPossible(c, i) == true){
             c_ = eliminate_square(c,i);
             string path = createPath(c_);
-            if (cache.find(path) == cache.end()) {
-                //not found
+
+            auto iter = cache.find(path);
+            if (iter != cache.end()) {
+                r += cache[path];
+            }else{
                 pair<string,int> pair_of_values (path,r);
                 cache.insert(pair_of_values);
-            } else {
-                // found
-                r += cache[path];
             }
             copy(c_.begin(), c_.end(), back_inserter(c));
             r += contafig(c_);
@@ -191,7 +191,6 @@ void mostra_vector_int (vector<int> veca){
 void mostra_string (string path){
     printf("%s", path);
 }
-
 
 int main (){
 

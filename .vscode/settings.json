@@ -2,7 +2,8 @@
     "files.associations": {
         "random": "cpp",
         "vector": "cpp",
-        "xutility": "cpp"
+        "xutility": "cpp",
+        "xstring": "cpp"
     },
     "C_Cpp.errorSquiggles": "enabled"
 }
