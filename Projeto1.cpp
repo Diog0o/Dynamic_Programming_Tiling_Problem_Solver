@@ -11,7 +11,7 @@
 
 using namespace std;
 
-unordered_map <string,int> cache;
+unordered_map <string,long long> cache;
 
 vector<vector<int>> createMatrix (vector<int> dados);
 vector<int> findCorner(vector<vector<int>> matrix);
@@ -44,9 +44,10 @@ vector<vector<int>> createMatrix (vector<int> dados){
 
 vector<int> findCorner(vector<vector<int>> matrix){ //sq falta ver quando e 0
     vector<int> res;
-    for (  int i=0; i<= matrix.size()-1;i++ ){
-        for (  int j= matrix[0].size()-1; j>=0 ;j--){
-            if (j < matrix[0].size()){
+    int size = matrix[0].size();
+    for ( unsigned int i=0; i<= matrix.size()-1;i++ ){
+        for ( int j= size-1; j>=0 ;j--){
+            if (j < size){
                 if (matrix[i][j]==1){
                     res.push_back(i);
                     res.push_back(j);
@@ -57,6 +58,7 @@ vector<int> findCorner(vector<vector<int>> matrix){ //sq falta ver quando e 0
     }
     return res;
 }
+
 
 vector<vector<int>> createBoundaries(vector<vector<int>> matrix){ //meter 1's em baixo
     vector<int> firstline;
@@ -219,13 +221,13 @@ vector<vector<int>> eliminate_square(vector<vector<int>> matrix, int size){ //qu
     return matrix_mudada;
 }
 
-int contafig ( vector<vector<int>> matrix){
+long long contafig ( vector<vector<int>> matrix){
 
     static string path_of_matrix = createPath(matrix);
    
     vector<vector<int>> c;
     copy(matrix.begin(), matrix.end(), back_inserter(c)); 
-    int r =0;
+    long long r =0;
 
     string path = createPath(c);
 
@@ -237,14 +239,14 @@ int contafig ( vector<vector<int>> matrix){
         //se nao encontrou
 
         if (canAddMatrix2x2(c) == false){
-            pair<string,int> pair_of_values (path,1);
+            pair<string,long long> pair_of_values (path,1);
             cache.insert(pair_of_values);
             r += 1;
         }else{
             for(int i =1; isPossible(c,i);i++ ){
                 r += contafig(eliminate_square(c,i));
             }
-            pair<string,int> pair_of_values (path,r);
+            pair<string,long long> pair_of_values (path,r);
             cache.insert(pair_of_values);
 
         }
@@ -259,10 +261,24 @@ int contafig ( vector<vector<int>> matrix){
     return r;
 }
 
-int final_function (vector<int> dados){
+long long final_function (vector<int> dados){
     vector<vector<int>> matrix;
     matrix = createMatrix(dados);
-    return contafig(matrix);
+    bool found=false;
+    for (unsigned int i=0; i<matrix.size();i++){
+        for (unsigned int j=0; j<matrix[0].size();j++){
+            if (matrix[i][j]==1){
+                found=true;
+            }
+        }
+    }
+    if (found==true){
+        return contafig(matrix);
+    }
+    else{
+
+        return 0;
+    }
 }
 
 void mostra_vector (vector<vector<int>> matrix){
@@ -320,7 +336,7 @@ int main (){
         dados.push_back(f);
         counter++;
     }
-    cout << final_function(dados);
+    printf("%lld\n", final_function(dados));
 
     return 0;
 }
