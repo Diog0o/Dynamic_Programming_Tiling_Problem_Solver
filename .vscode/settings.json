@@ -3,7 +3,10 @@
         "random": "cpp",
         "vector": "cpp",
         "xutility": "cpp",
-        "xstring": "cpp"
+        "xstring": "cpp",
+        "iterator": "cpp",
+        "unordered_map": "cpp",
+        "utility": "cpp"
     },
     "C_Cpp.errorSquiggles": "enabled"
 }

@@ -12,7 +12,6 @@ using namespace std;
 
 unordered_map <string,int> cache;
 
-
 vector<vector<int>> createMatrix (vector<int> dados);
 vector<int> findCorner(vector<vector<int>> matrix);
 vector<vector<int>> createBoundaries(vector<vector<int>> matrix);
@@ -68,7 +67,7 @@ vector<vector<int>> createBoundaries(vector<vector<int>> matrix){ //meter 1's em
         firstline.push_back(0);
     }
 
-    for (unsigned int i=0; i<matrix.size()+1; i++){
+    for (unsigned int i=0; i<matrix.size(); i++){
         matrix_boundaries[i].push_back(0);
     }
     for (unsigned int i=0; i<matrix[0].size(); i++){
@@ -94,34 +93,37 @@ string createPath (vector<vector<int>> matrix){
         if(matrix_with_boundaries[first_line][first_col]==1 && matrix_with_boundaries[first_line-1][first_col]==0 ){
             path += "H";
             first_col ++ ;
+            continue;
         }
         if(matrix_with_boundaries[first_line][first_col]==0){
             path += "D";
             first_line++;
+            continue;
         }
         if (matrix_with_boundaries[first_line][first_col]==1 && matrix_with_boundaries[first_line-1][first_col]==1){
             path += "U";
             first_line--;
+            continue;
        }
     }
     return path;
 }
 
-vector<vector<int>> eliminate_square(vector<vector<int>> matrix, int size){ //quando usarmos temos que garantir que nao sai da matriz
-    vector<vector<int>> matrix_mudada;
-    copy(matrix.begin(), matrix.end(), back_inserter(matrix_mudada));
-    vector<int> corner = findCorner(matrix);
-    int i = corner[0];
-    int j = corner[1];
-    int stop1 = i+size;
-    int stop2 = j-size;
-    for(int i = corner[0]; i< stop1 ; i++){
-        for (int j = corner[1]; j> stop2 ; j--){
-            matrix_mudada[i][j]=0;     
-        }
-    }
-    return matrix_mudada;
-}
+// vector<vector<int>> eliminate_square(vector<vector<int>> matrix, int size){ //quando usarmos temos que garantir que nao sai da matriz
+//     vector<vector<int>> matrix_mudada;
+//     copy(matrix.begin(), matrix.end(), back_inserter(matrix_mudada));
+//     vector<int> corner = findCorner(matrix);
+//     int i = corner[0];
+//     int j = corner[1];
+//     int stop1 = i+size;
+//     int stop2 = j-size;
+//     for(int i = corner[0]; i< stop1 ; i++){
+//         for (int j = corner[1]; j> stop2 ; j--){
+//             matrix_mudada[i][j]=0;     
+//         }
+//     }
+//     return matrix_mudada;
+// }
 
 
 bool isPossible (vector<vector<int>> matrix, int size){
@@ -144,31 +146,104 @@ bool isPossible (vector<vector<int>> matrix, int size){
     }
     return true;
 }
+bool canAddMatrix2x2 (vector<vector<int>> matrix){
+    vector<vector<int>> matrix_with_boundaries;
+    matrix_with_boundaries = createBoundaries(matrix);
+    for ( int i = 1; i<matrix.size(); i++){
+        for ( int j = 0; j<=matrix[0].size() -1; j++){
+            if (matrix_with_boundaries[i][j] ==1){
+                if (matrix_with_boundaries[i][j+1] == 1 && matrix_with_boundaries[i+1][j+1] == 1 \
+                && matrix_with_boundaries[i+1][j] == 1){
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
 
 
+
+// int contafig ( vector<vector<int>> matrix){
+//     vector<vector<int>> c;
+//     copy(matrix.begin(), matrix.end(), back_inserter(c)); 
+//     vector<vector<int>> c_;
+//     int maxi = max(matrix.size() , matrix[0].size());
+//     int r;
+    
+//     for(int i =1 ; i<maxi; i++){
+//         if (isPossible(c, i) == true){
+//             c_ = eliminate_square(c,i);
+//             string path = createPath(c_);
+
+//             auto iter = cache.find(path);
+//             if (iter != cache.end()) {
+//                 //se encontrou
+//                 return cache[path];
+//             }else{
+//                 //se nao encontrou
+//                 if (canAddMatrix2x2(c_) == false){
+//                     pair<string,int> pair_of_values (path,1);
+//                     cache.insert(pair_of_values);
+//                     return 1;
+//                 }else{
+//                     pair<string,int> pair_of_values (path,contafig(c_));
+//                     cache.insert(pair_of_values);
+//                 }
+//             }
+//             copy(c_.begin(), c_.end(), back_inserter(c));
+//             r += contafig(c_);
+//         }
+//     }
+//     return r;
+// }
+
+vector<vector<int>> eliminate_square(vector<vector<int>> matrix, int size){ //quando usarmos temos que garantir que nao sai da matriz
+    if (isPossible(matrix,size)==false){
+        vector<vector<int>> matrix_com_zeros ={{0,0},{0,0}};
+        return matrix_com_zeros;
+    }
+    vector<vector<int>> matrix_mudada;
+    copy(matrix.begin(), matrix.end(), back_inserter(matrix_mudada));
+    vector<int> corner = findCorner(matrix);
+    int i = corner[0];
+    int j = corner[1];
+    int stop1 = i+size;
+    int stop2 = j-size;
+    for(int i = corner[0]; i< stop1 ; i++){
+        for (int j = corner[1]; j> stop2 ; j--){
+            matrix_mudada[i][j]=0;     
+        }
+    }
+    return matrix_mudada;
+}
 
 int contafig ( vector<vector<int>> matrix){
     vector<vector<int>> c;
     copy(matrix.begin(), matrix.end(), back_inserter(c)); 
-    vector<vector<int>> c_;
     int maxi = max(matrix.size() , matrix[0].size());
     int r =0;
-    for(int i =1 ; i<maxi; i++){
-        if (isPossible(c, i) == true){
-            c_ = eliminate_square(c,i);
-            string path = createPath(c_);
 
-            auto iter = cache.find(path);
-            if (iter != cache.end()) {
-                r += cache[path];
-            }else{
-                pair<string,int> pair_of_values (path,r);
-                cache.insert(pair_of_values);
-            }
-            copy(c_.begin(), c_.end(), back_inserter(c));
-            r += contafig(c_);
+    string path = createPath(c);
+
+    auto iter = cache.find(path);
+    if (iter != cache.end()) {
+        //se encontrou
+        r += cache[path];
+    }else{
+        //se nao encontrou
+        if (canAddMatrix2x2(c) == false){
+            pair<string,int> pair_of_values (path,1);
+            cache.insert(pair_of_values);
+            r += 1;
+        }else{
+            pair<string,int> pair_of_values (path,contafig(eliminate_square(c,1)) + contafig(eliminate_square(c,2)));
+            cache.insert(pair_of_values);
         }
     }
+
+        
+    
     return r;
 }
 
@@ -188,13 +263,11 @@ void mostra_vector_int (vector<int> veca){
     }
 }
 
-void mostra_string (string path){
-    printf("%s", path);
-}
+
 
 int main (){
 
-    vector<vector<int>> vec = {{1,1,1},{1,1,1},{1,1,1}};
+    vector<vector<int>> vec = {{1,1},{1,1}};
     vector<int> dados;
     dados.push_back(3);
     dados.push_back(3);
@@ -208,6 +281,7 @@ int main (){
     //mostra_vector(createBoundaries(vec));
     //mostra_string(createPath(vec));
     //mostra_vector(eliminate_square(vec, 1));
+
 
     cout << contafig(vec);
 
