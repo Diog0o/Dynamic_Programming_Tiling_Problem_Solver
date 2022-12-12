@@ -8,6 +8,7 @@
 #include <string>
 
 
+
 using namespace std;
 
 unordered_map <string,int> cache;
@@ -43,8 +44,8 @@ vector<vector<int>> createMatrix (vector<int> dados){
 
 vector<int> findCorner(vector<vector<int>> matrix){ //sq falta ver quando e 0
     vector<int> res;
-    for ( int i=0; i<= matrix.size()-1;i++ ){
-        for ( int j= matrix[0].size()-1; j>=0 ;j--){
+    for (  int i=0; i<= matrix.size()-1;i++ ){
+        for (  int j= matrix[0].size()-1; j>=0 ;j--){
             if (j < matrix[0].size()){
                 if (matrix[i][j]==1){
                     res.push_back(i);
@@ -128,9 +129,9 @@ string createPath (vector<vector<int>> matrix){
 
 bool isPossible (vector<vector<int>> matrix, int size){
     vector<int> corner = findCorner(matrix);
-    int i = matrix.size() - corner[0] +1;
+    int i = matrix.size() - corner[0] ;
     int j = corner[1] +1;
-    if (i-size < 0 || j-size<0){
+    if (i<size  || j<size){
         return false;
     }
     int k = corner[0];
@@ -149,8 +150,8 @@ bool isPossible (vector<vector<int>> matrix, int size){
 bool canAddMatrix2x2 (vector<vector<int>> matrix){
     vector<vector<int>> matrix_with_boundaries;
     matrix_with_boundaries = createBoundaries(matrix);
-    for ( int i = 1; i<matrix.size(); i++){
-        for ( int j = 0; j<=matrix[0].size() -1; j++){
+    for ( unsigned int i = 1; i<matrix.size(); i++){
+        for ( unsigned int j = 0; j<=matrix[0].size() -1; j++){
             if (matrix_with_boundaries[i][j] ==1){
                 if (matrix_with_boundaries[i][j+1] == 1 && matrix_with_boundaries[i+1][j+1] == 1 \
                 && matrix_with_boundaries[i+1][j] == 1){
@@ -219,9 +220,11 @@ vector<vector<int>> eliminate_square(vector<vector<int>> matrix, int size){ //qu
 }
 
 int contafig ( vector<vector<int>> matrix){
+
+    static string path_of_matrix = createPath(matrix);
+   
     vector<vector<int>> c;
     copy(matrix.begin(), matrix.end(), back_inserter(c)); 
-    int maxi = max(matrix.size() , matrix[0].size());
     int r =0;
 
     string path = createPath(c);
@@ -229,22 +232,37 @@ int contafig ( vector<vector<int>> matrix){
     auto iter = cache.find(path);
     if (iter != cache.end()) {
         //se encontrou
-        r += cache[path];
+        r += iter ->second;
     }else{
         //se nao encontrou
+
         if (canAddMatrix2x2(c) == false){
             pair<string,int> pair_of_values (path,1);
             cache.insert(pair_of_values);
             r += 1;
         }else{
-            pair<string,int> pair_of_values (path,contafig(eliminate_square(c,1)) + contafig(eliminate_square(c,2)));
+            for(int i =1; isPossible(c,i);i++ ){
+                r += contafig(eliminate_square(c,i));
+            }
+            pair<string,int> pair_of_values (path,r);
             cache.insert(pair_of_values);
+
         }
     }
-
+    auto iter1 = cache.find(path_of_matrix);
+    
+    if (iter1 != cache.end()) {
+        return iter1->second;
+    }
         
     
     return r;
+}
+
+int final_function (vector<int> dados){
+    vector<vector<int>> matrix;
+    matrix = createMatrix(dados);
+    return contafig(matrix);
 }
 
 void mostra_vector (vector<vector<int>> matrix){
@@ -267,13 +285,13 @@ void mostra_vector_int (vector<int> veca){
 
 int main (){
 
-    vector<vector<int>> vec = {{1,1},{1,1}};
-    vector<int> dados;
-    dados.push_back(3);
-    dados.push_back(3);
-    dados.push_back(3);
-    dados.push_back(3);
-    dados.push_back(3);
+    // vector<vector<int>> vec = {{1,1,1,1,1,1,1,1},{1,1,1,1,1,1,1,1},{1,1,1,1,1,1,1,1},{1,1,1,1,1,1,1,1},{1,1,1,1,1,1,1,1},{1,1,1,1,1,1,1,1},{1,1,1,1,1,1,1,1},{1,1,1,1,1,1,1,1}};
+    // vector<int> dados;
+    // dados.push_back(3);
+    // dados.push_back(3);
+    // dados.push_back(3);
+    // dados.push_back(3);
+    // dados.push_back(3);
     
     //mostra_vector(createMatrix(dados));
     //mostra_vector(createMatrix(dados));
@@ -283,26 +301,26 @@ int main (){
     //mostra_vector(eliminate_square(vec, 1));
 
 
-    cout << contafig(vec);
+    // cout << final_function (dados);
 
-    // vector<int> dados ;
+    vector<int> dados ;
 
-    // int n;
-    // scanf("%d", &n);
-    // dados.push_back(n);
+    int n;
+    scanf("%d", &n);
+    dados.push_back(n);
 
-    // int m;
-    // scanf("%d", &m);
-    // dados.push_back(m);
+    int m;
+    scanf("%d", &m);
+    dados.push_back(m);
 
-    // int counter=0;
-    // while (counter != n){
-    //     int f;
-    //     scanf("%d", &f);
-    //     dados.push_back(f);
-    //     counter++;
-    // }
-    //contafig(dados);
+    int counter=0;
+    while (counter != n){
+        int f;
+        scanf("%d", &f);
+        dados.push_back(f);
+        counter++;
+    }
+    cout << final_function(dados);
 
     return 0;
 }
