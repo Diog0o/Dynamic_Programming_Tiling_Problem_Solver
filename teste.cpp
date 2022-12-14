@@ -12,15 +12,14 @@
 using namespace std;
 using namespace std::chrono;
 
-unordered_map <string,unsigned long long > cache;
+unordered_map <int,unsigned long long > cache;
 
 vector<vector<int>> createMatrix (vector<int> dados);
 vector<int> findCorner(vector<vector<int>> matrix);
 vector<vector<int>> createBoundaries(vector<vector<int>> matrix);
 bool canAddMatrix2x2 (vector<vector<int>> matrix);
-string createPath (vector<vector<int>> matrix);
+unsigned long long createPath (vector<vector<int>> matrix);
 void mostra_vector (vector<vector<int>> matrix);
-void mostra_vector_int (vector<int> veca);
 
 
 
@@ -69,8 +68,8 @@ vector<vector<int>> createBoundaries(vector<vector<int>> matrix){ //meter 1's em
     vector<int> firstline;
     vector <int> lastline;
     vector<vector<int>> matrix_boundaries;
-    copy(matrix.begin(), matrix.end(), back_inserter(matrix_boundaries));
-
+    copy(matrix.begin(), matrix.end(), back_inserter(matrix_boundaries)); 
+    
     for (unsigned int i=0; i<matrix[0].size()+1 ; i++){
         firstline.push_back(0);
     }
@@ -82,7 +81,7 @@ vector<vector<int>> createBoundaries(vector<vector<int>> matrix){ //meter 1's em
         lastline.push_back(1);
     }
     lastline.push_back(0);
-
+    
     matrix_boundaries.push_back(lastline);
     matrix_boundaries.insert(matrix_boundaries.begin(), firstline);
 
@@ -90,55 +89,35 @@ vector<vector<int>> createBoundaries(vector<vector<int>> matrix){ //meter 1's em
 }
 
 
-string createPath (vector<vector<int>> matrix){
+unsigned long long createPath (vector<vector<int>> matrix){
     unsigned int first_line = 1;
     unsigned int first_col = 0;
-
+    
     vector<vector<int>> matrix_with_boundaries = createBoundaries(matrix);
     string path;
-
+    
     while ( first_line != matrix_with_boundaries.size()-1 || first_col != matrix_with_boundaries[0].size()-1){
         if(matrix_with_boundaries[first_line][first_col]==1 && matrix_with_boundaries[first_line-1][first_col]==0 ){
-            path += "H";
+            path += "1";
             first_col ++ ;
             continue;
         }
         if(matrix_with_boundaries[first_line][first_col]==0){
-            path += "D";
+            path += "2";
             first_line++;
             continue;
         }
         if (matrix_with_boundaries[first_line][first_col]==1 && matrix_with_boundaries[first_line-1][first_col]==1){
-            path += "U";
+            path += "3";
             first_line--;
             continue;
        }
     }
-    return path;
+    unsigned long long n = stoi(path);
+    return n;
 }
 
 
-
-// bool isPossible (vector<vector<int>> matrix, int size){
-//     vector<int> corner = findCorner(matrix);
-//     int i = matrix.size() - corner[0] ;
-//     int j = corner[1] +1;
-//     if (i<size  || j<size){
-//         return false;
-//     }
-//     int k = corner[0];
-//     int l = corner[1];
-//     int stop1 = k+size-1;
-//     int stop2 = l+1-size;
-//     for(int k = corner[0]; k<= stop1 ; k++){
-//         for (int l = corner[1]; l>= stop2 ; l--){
-//             if(matrix[k][l]==0){
-//                 return false;
-//             }
-//         }
-//     }
-//     return true;
-// }
 
 vector<int> isPossible (vector<vector<int>> matrix){
     vector<int> corner = findCorner(matrix);
@@ -149,10 +128,9 @@ vector<int> isPossible (vector<vector<int>> matrix){
     int j = corner[1] +1;
     int maxi = max(matrix.size(), matrix[0].size());
     int size;
-    for (size =1; size<maxi+1; size++){
+    for (int size =1; size<maxi+1; i++){
         if (i<size  || j<size){
-            res.push_back(size-1);
-            return res;
+            break;
         }
         int k = corner[0];
         int l = corner[1];
@@ -161,14 +139,12 @@ vector<int> isPossible (vector<vector<int>> matrix){
         for(int k = corner[0]; k<= stop1 ; k++){
             for (int l = corner[1]; l>= stop2 ; l--){
                 if(matrix[k][l]==0){
-                    res.push_back(size-1);
-                    return res;
+                    break;
                 }
             }
         }
     }
     res.push_back(size-1);
-    return res;
 }
 
 
@@ -189,17 +165,21 @@ bool canAddMatrix2x2 (vector<vector<int>> matrix){
 
 
 
-vector<vector<int>> eliminate_square(int corner0, int corner1, vector<vector<int>> matrix, int size){ //quando usarmos temos que garantir que nao sai da matriz
-
+vector<vector<int>> eliminate_square(vector<vector<int>> matrix, int size){ //quando usarmos temos que garantir que nao sai da matriz
+    if (isPossible(matrix,size)==false){
+        vector<vector<int>> matrix_com_zeros ={{0,0},{0,0}};
+        return matrix_com_zeros;
+    }
     vector<vector<int>> matrix_mudada;
     copy(matrix.begin(), matrix.end(), back_inserter(matrix_mudada));
-    int i = corner0;
-    int j = corner1;
+    vector<int> corner = findCorner(matrix);
+    int i = corner[0];
+    int j = corner[1];
     int stop1 = i+size;
     int stop2 = j-size;
-    for(int i = corner0; i< stop1 ; i++){
-        for (int j = corner1; j> stop2 ; j--){
-            matrix_mudada[i][j]=0;
+    for(int i = corner[0]; i< stop1 ; i++){
+        for (int j = corner[1]; j> stop2 ; j--){
+            matrix_mudada[i][j]=0;     
         }
     }
     return matrix_mudada;
@@ -207,13 +187,13 @@ vector<vector<int>> eliminate_square(int corner0, int corner1, vector<vector<int
 
 unsigned long long contafig ( vector<vector<int>> matrix){
 
-    static string path_of_matrix = createPath(matrix);
-
+    static int path_of_matrix = createPath(matrix);
+   
     vector<vector<int>> c;
     copy(matrix.begin(), matrix.end(), back_inserter(c));
     unsigned long long  r =0;
 
-    string path = createPath(c);
+    int path = createPath(c);
 
     auto iter = cache.find(path);
     if (iter != cache.end()) {
@@ -223,26 +203,24 @@ unsigned long long contafig ( vector<vector<int>> matrix){
         //se nao encontrou
 
         if (canAddMatrix2x2(c) == false){
-            pair<string,unsigned long long > pair_of_values (path,1);
+            pair<unsigned long long,unsigned long long > pair_of_values (path,1);
             cache.insert(pair_of_values);
             r += 1;
-
         }else{
-            vector<int> maximomatrix = isPossible(c);
-           
-            for(int i =1; i<= maximomatrix[2]; i++ ){
-                r += contafig(eliminate_square(maximomatrix[0],maximomatrix[1],c,i));
+            for(int i =1; isPossible(c,i);i++ ){
+                r += contafig(eliminate_square(c,i));
             }
-            pair<string,unsigned long long > pair_of_values (path,r);
+            pair<unsigned long long,unsigned long long > pair_of_values (path,r);
             cache.insert(pair_of_values);
+
         }
     }
     auto iter1 = cache.find(path_of_matrix);
-
+    
     if (iter1 != cache.end()) {
         return iter1->second;
     }
-
+        
     return r;
 }
 
@@ -286,7 +264,7 @@ void mostra_vector_int (vector<int> veca){
 
 int main (){
 
-    //vector<vector<int>> vec = {{0,0,0,0},{0,0,1,1},{1,1,1,1},{1,1,1,1}};
+     vector<vector<int>> vec = {{1,0,0},{1,1,0},{1,1,1}};
     // vector<int> dados;
     // dados.push_back(3);
     // dados.push_back(3);
@@ -302,7 +280,7 @@ int main (){
     //mostra_vector(eliminate_square(vec, 1));
 
 
-    //cout << contafig (vec);
+    //cout << canAddMatrix2x2 (vec);
 
     vector<int> dados ;
 
@@ -321,15 +299,16 @@ int main (){
         dados.push_back(f);
         counter++;
     }
-
-    auto start = high_resolution_clock::now();
-    printf("%lld\n", final_function(dados));
+   
+     auto start = high_resolution_clock::now();
+    printf("%ld\n", final_function(dados));
     auto stop = high_resolution_clock::now();
 
      auto duration = duration_cast<microseconds>(stop - start);
  
     cout << "Time taken by function: "
          << duration.count() << " microseconds" << endl;
+
 
     return 0;
 }
