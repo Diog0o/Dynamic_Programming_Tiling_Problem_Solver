@@ -188,7 +188,6 @@ bool canAddMatrix2x2 (vector<vector<int>> matrix){
 }
 
 
-
 vector<vector<int>> eliminate_square(int corner0, int corner1, vector<vector<int>> matrix, int size){ //quando usarmos temos que garantir que nao sai da matriz
 
     vector<vector<int>> matrix_mudada;
@@ -213,24 +212,24 @@ unsigned long long contafig ( vector<vector<int>> matrix){
     copy(matrix.begin(), matrix.end(), back_inserter(c));
     unsigned long long  r =0;
 
-    string path = createPath(c);
+    string path = createPath(c); //O(n^2)
 
     auto iter = cache.find(path);
-    if (iter != cache.end()) {
+    if (iter != cache.end()) { //0(1)
         //se encontrou
         r += iter ->second;
     }else{
         //se nao encontrou
 
-        if (canAddMatrix2x2(c) == false){
+        if (canAddMatrix2x2(c) == false){ //0(nxm)
             pair<string,unsigned long long > pair_of_values (path,1);
             cache.insert(pair_of_values);
             r += 1;
 
         }else{
-            vector<int> maximomatrix = isPossible(c);
+            vector<int> maximomatrix = isPossible(c); //O(nxm)
            
-            for(int i =1; i<= maximomatrix[2]; i++ ){
+            for(int i =1; i<= maximomatrix[2]; i++ ){ //n vezes algo que acontece n
                 r += contafig(eliminate_square(maximomatrix[0],maximomatrix[1],c,i));
             }
             pair<string,unsigned long long > pair_of_values (path,r);
