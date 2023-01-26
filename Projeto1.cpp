@@ -118,28 +118,6 @@ string createPath (vector<vector<int>> matrix){
 }
 
 
-
-// bool isPossible (vector<vector<int>> matrix, int size){
-//     vector<int> corner = findCorner(matrix);
-//     int i = matrix.size() - corner[0] ;
-//     int j = corner[1] +1;
-//     if (i<size  || j<size){
-//         return false;
-//     }
-//     int k = corner[0];
-//     int l = corner[1];
-//     int stop1 = k+size-1;
-//     int stop2 = l+1-size;
-//     for(int k = corner[0]; k<= stop1 ; k++){
-//         for (int l = corner[1]; l>= stop2 ; l--){
-//             if(matrix[k][l]==0){
-//                 return false;
-//             }
-//         }
-//     }
-//     return true;
-// }
-
 vector<int> isPossible (vector<vector<int>> matrix){
     vector<int> corner = findCorner(matrix);
     vector<int> res;
@@ -265,43 +243,8 @@ unsigned long long  final_function (vector<int> dados){
     }
 }
 
-void mostra_vector (vector<vector<int>> matrix){
-    for (unsigned int i =0; i< matrix.size();i++){
-        printf("%s", "\n");
-        for (unsigned int j=0; j<matrix[0].size(); j++){
-            printf("%d",matrix[i][j]);
-        }
-    }
-}
-
-void mostra_vector_int (vector<int> veca){
-    printf("%s", "\n");
-    for (unsigned int i=0; i<veca.size(); i++){
-        printf("%d", veca[i]);
-    }
-}
-
-
 
 int main (){
-
-    //vector<vector<int>> vec = {{0,0,0,0},{0,0,1,1},{1,1,1,1},{1,1,1,1}};
-    // vector<int> dados;
-    // dados.push_back(3);
-    // dados.push_back(3);
-    // dados.push_back(3);
-    // dados.push_back(3);
-    // dados.push_back(3);
-
-    //mostra_vector(createMatrix(dados));
-    //mostra_vector(createMatrix(dados));
-    //mostra_vector_int(findCorner(vec));
-    //mostra_vector(createBoundaries(vec));
-    //mostra_string(createPath(vec));
-    //mostra_vector(eliminate_square(vec, 1));
-
-
-    //cout << contafig (vec);
 
     vector<int> dados ;
 
